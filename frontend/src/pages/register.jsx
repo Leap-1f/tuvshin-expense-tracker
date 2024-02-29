@@ -5,7 +5,9 @@ export default function register() {
   const [email, setEmail] = useState("");
   const [password, setPass] = useState("");
   const [cpassword, setCpass] = useState("");
-
+  function redir() {
+    window.location.replace("http://localhost:3000/onboarding");
+  }
   function registerVerify() {
     const sc = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~][0-9]/g;
     const error = document.getElementById("err");
@@ -26,9 +28,9 @@ export default function register() {
       return 200;
     }
   }
-  function registerAccount() {
+  async function registerAccount() {
     console.log(name, email, password, cpassword);
-    fetch("http://localhost:8080/user/register", {
+    let fart = await fetch("http://localhost:8080/user/register", {
       method: "POST",
       mode: "cors",
       headers: {
@@ -40,7 +42,11 @@ export default function register() {
         pass: password,
         cpass: cpassword,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((response) => localStorage.setItem("id", response))
+      .then((response) => console.log(response));
+    return fart;
   }
   return (
     <div className="flex flex-row">
@@ -135,7 +141,9 @@ export default function register() {
                 let ok = registerVerify();
                 if (ok === 200) {
                   console.log("working");
-                  registerAccount();
+                  let id = registerAccount();
+                  localStorage.setItem("step", 1);
+                  setTimeout(redir(), 3000);
                 } else {
                   console.log("nope");
                 }
