@@ -10,7 +10,6 @@ export default function onBoard() {
   function stepProgress() {
     // there has gotta be a better way of doing this.
     var step = localStorage.getItem("step");
-    const container = document.getElementById("container");
     var progress = document.getElementsByClassName("gg");
     if (step === "1") {
       progress[1].classList.remove("step-primary");
@@ -27,11 +26,11 @@ export default function onBoard() {
   function goTo() {
     var step = localStorage.getItem("step");
     if (step === "1") {
-      window.location.replace("http://localhost:3000/onboarding#currency");
+      window.location.assign("http://localhost:3000/onboarding#currency");
     } else if (step === "2") {
-      window.location.replace("http://localhost:3000/onboarding#balance");
+      window.location.assign("http://localhost:3000/onboarding#balance");
     } else if (step === "3") {
-      window.location.replace("http://localhost:3000/onboarding#done");
+      window.location.assign("http://localhost:3000/onboarding#done");
     }
   }
   if (typeof window !== "undefined") {
@@ -60,13 +59,13 @@ export default function onBoard() {
   function checkWTF() {
     if (currencyIsVisible === true) {
       advanceStep("1");
-      console.log("cure");
+      console.log("advancing 1");
     } else if (balanceIsVisible === true) {
       advanceStep("2");
-      console.log("bala");
+      console.log("advancing 2");
     } else if (doneIsVisible === true) {
       advanceStep("3");
-      console.log("doner");
+      console.log("advancing 3");
     } else {
       console.log("fuck");
     }

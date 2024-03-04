@@ -6,7 +6,7 @@ export default function register() {
   const [password, setPass] = useState("");
   const [cpassword, setCpass] = useState("");
   function redir() {
-    window.location.replace("http://localhost:3000/onboarding");
+    window.location.assign("http://localhost:3000/onboarding");
   }
   function registerVerify() {
     const sc = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~][0-9]/g;
@@ -30,7 +30,7 @@ export default function register() {
   }
   async function registerAccount() {
     console.log(name, email, password, cpassword);
-    let fart = await fetch("http://localhost:8080/user/register", {
+    let fart = await fetch("http://localhost:8080/users/createTable", {
       method: "POST",
       mode: "cors",
       headers: {
@@ -40,7 +40,7 @@ export default function register() {
         name: name,
         email: email,
         pass: password,
-        cpass: cpassword,
+        createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
       }),
     })
       .then((response) => response.json())
