@@ -1,18 +1,45 @@
 import express from "express";
 import cors from "cors";
-import { sql } from "./config/database.js";
 import { v4 as uuidv4 } from "uuid";
+import { sql } from "./config/database.js";
 import { users } from "./src/router/user.js";
-app.use("/users", users);
 const app = express();
 const port = 8080;
+app.use("/users", users);
 app.use(cors());
 app.use(express.json());
-app.get("/users", async (request, response) => {
-  const data = await sql`SELECT * FROM users`;
-  console.log(data);
-  response.status(400);
-  response.send(data);
+app.post("/users/createTable", async (request, response) => {
+  const stringif = JSON.stringify(request.body);
+  const parsed = JSON.parse(stringif);
+  let id = uuidv4();
+  console.log(
+    "INSERT INTO users(uuid, name, email, password, createdAt)VALUES" +
+      `('` +
+      id +
+      "','" +
+      parsed.name +
+      "','" +
+      parsed.email +
+      "','" +
+      parsed.pass +
+      "','" +
+      parsed.createdAt +
+      "')"
+  );
+
+  (await sql`INSERT INTO users(uuid, name, email, password, createdAt)VALUES('`) +
+    parsed.id +
+    "','" +
+    parsed.name +
+    "','" +
+    parsed.email +
+    "','" +
+    parsed.pass +
+    "','" +
+    parsed.createdAt +
+    "')";
+  response.status(200);
+  response.send(id);
 });
 app.patch("/user/updateTable", async (request, response) => {
   const parsed = JSON.parse(request.body);

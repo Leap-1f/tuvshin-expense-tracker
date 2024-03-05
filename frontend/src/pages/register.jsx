@@ -143,7 +143,6 @@ export default function register() {
                   console.log("working");
                   let id = registerAccount();
                   localStorage.setItem("step", 1);
-                  setTimeout(redir(), 3000);
                 } else {
                   console.log("nope");
                 }
