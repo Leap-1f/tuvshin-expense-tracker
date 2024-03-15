@@ -1,4 +1,24 @@
+import { useState } from "react";
 export default function Login() {
+  const [email, setMail] = useState("");
+  const [pass, setPass] = useState("");
+  async function logIn() {
+    let fart = await fetch("http://localhost:8080/users/login", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        pass: pass,
+      }),
+    })
+      .then((response) => JSON.stringify(response))
+      .then((response) => localStorage.setItem("id", response));
+
+    return fart;
+  }
   return (
     <div className="flex flex-row">
       <div className="w-1/2 h-screen bg-neutral-50 flex justify-center items-center">
@@ -34,13 +54,24 @@ export default function Login() {
               type="text"
               placeholder="Email"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
+              onChange={(e) => {
+                setMail(e.target.value);
+              }}
             />
             <input
               type="password"
               placeholder="Password"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
+              onChange={(e) => {
+                setPass(e.target.value);
+              }}
             />
-            <button className="btn w-5/6 bg-primary text-neutral-50 rounded-3xl border-none text-lg font-light hover:bg-primary hover:text-black transition-all duration-200 ">
+            <button
+              className="btn w-5/6 bg-primary text-neutral-50 rounded-3xl border-none text-lg font-light hover:bg-primary hover:text-black transition-all duration-200"
+              onClick={async () => {
+                await logIn();
+              }}
+            >
               Log In
             </button>
           </div>

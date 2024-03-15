@@ -40,7 +40,6 @@ export default function register() {
         name: name,
         email: email,
         pass: password,
-        createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
       }),
     })
       .then((response) => response.json())
@@ -137,12 +136,13 @@ export default function register() {
             </div>
             <button
               className="btn w-5/6 bg-primary text-neutral-50 rounded-3xl border-none text-lg font-light hover:bg-primary hover:text-black transition-all duration-200"
-              onClick={() => {
-                let ok = registerVerify();
+              onClick={async () => {
+                let ok = await registerVerify();
                 if (ok === 200) {
                   console.log("working");
                   let id = registerAccount();
                   localStorage.setItem("step", 1);
+                  redir();
                 } else {
                   console.log("nope");
                 }
