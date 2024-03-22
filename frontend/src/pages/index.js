@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function Login() {
   const [email, setMail] = useState("");
   const [pass, setPass] = useState("");
@@ -28,6 +28,16 @@ export default function Login() {
     });
     return fart;
   }
+  function loggedIn() {
+    if (localStorage.getItem("id") != undefined) {
+      window.location.href = "http://localhost:3000/dashboard";
+    } else {
+      console.log("all good");
+    }
+  }
+  useEffect(() => {
+    loggedIn();
+  }, []);
   return (
     <div className="flex flex-row">
       <div className="w-1/2 h-screen bg-neutral-50 flex justify-center items-center">

@@ -103,7 +103,31 @@ app.post("/users/getCategories", async (request, response) => {
 app.post("/users/getInfo", async (request, response) => {
   const stringif = JSON.stringify(request.body);
   const parsed = JSON.parse(stringif);
-  const text = "SELECT balance";
+  const text = "SELECT balance FROM users WHERE id = $1";
+  const values = [parsed.uuid];
+  const res = await client.query(text, values);
+  response.status(200);
+  response.send(res.rows[0]);
+});
+app.post("/users/addRecord", async (request, response) => {
+  const stringif = JSON.stringify(request.body);
+  const parsed = JSON.parse(stringif);
+  let id = uuidv4();
+  const totaldate = parsed.date + " " + parsed.time;
+  const text =
+    "INSERT INTO transaction(id, user_id, name, amount, transaction_type,description,date, category_id)VALUES($1,$2,$3,$4,$5,$6,$7,$8)";
+  const values = [
+    id,
+    parsed.uuid,
+    parsed.payee,
+    parsed.amount,
+    parsed.type,
+    parsed.desc,
+    totaldate,
+    parsed.catid,
+  ];
+  const res = await client.query(text, values);
+  response.sendStatus(400);
 });
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port);

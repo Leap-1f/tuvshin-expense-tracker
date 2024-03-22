@@ -5,7 +5,31 @@ export default function Dashboard() {
   const [value, setValue] = useState([0, 1000]);
   const [name, setName] = useState("");
   const [categories, setCategories] = useState([]);
-  const [trans_cat, setTransCat] = useState("Choose category");
+  const [change, setChange] = useState("");
+  const [type, setType] = useState("EXP");
+  const [toWho, setToWho] = useState("");
+  const [desc, setDesc] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  async function addRecord() {
+    const recordAdd = await fetch("http://localhost:8080/users/addRecord", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uuid: localStorage.getItem("id"),
+        payee: toWho,
+        amount: change,
+        type: type,
+        desc: desc,
+        date: date,
+        time: time,
+        catid: document.getElementById("trans_cat").value,
+      }),
+    });
+  }
   function checkId() {
     if (localStorage.id != undefined) {
       console.log("all good");
@@ -144,7 +168,7 @@ export default function Dashboard() {
                     </button>
                   </form>
                 </div>
-                <div className="mt-6">
+                <div className="mt-6 flex flex-row gap-4">
                   <div className="w-1/2 flex flex-col gap-5">
                     <div class="join">
                       <input
@@ -153,25 +177,31 @@ export default function Dashboard() {
                         name="inex"
                         className="join-item btn hover:btn-error w-24 rounded-3xl"
                         checked
+                        onClick={() => {
+                          setType("EXP");
+                        }}
                       />
                       <input
                         aria-label="Income"
                         type="radio"
                         name="inex"
                         className="join-item btn  hover:btn-success w-24 rounded-3xl"
-                        selected
+                        onClick={() => {
+                          setType("INC");
+                        }}
                       />
                     </div>
                     <input
                       type="number"
                       className="input bg-base-200 pt-6 input-lg pr-10"
                       placeholder="₮ 000.00"
+                      onChange={(e) => setChange(e.target.value)}
                     />
                     <h4 className="relative bottom-16 text-sm font-light left-6">
                       Amount
                     </h4>
                     <h3>Category</h3>
-                    <select className="select">
+                    <select className="select border-base-300" id="trans_cat">
                       <option selected disabled>
                         Choose a category
                       </option>
@@ -180,18 +210,59 @@ export default function Dashboard() {
                         <option value={items.id}>{items.name}</option>
                       ))}
                     </select>
-                    <div className="flex flex-row">
+                    <div className="flex flex-row gap-3">
                       <div className="flex flex-col">
                         <h1>Date</h1>
-                        <input type="date" className="input" />
+                        <input
+                          type="date"
+                          className="input border-base-300 bg-base-100"
+                          onChange={(e) => {
+                            setDate(e.target.value);
+                          }}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <h1>Time</h1>
-                        <input type="time" className="input" />
+                        <input
+                          type="time"
+                          className="input  border-base-300 bg-base-100"
+                          onChange={(e) => {
+                            setTime(e.target.value);
+                          }}
+                        />
                       </div>
                     </div>
+                    <button
+                      className="btn rounded-3xl btn-primary font-light w-full"
+                      onClick={() => {
+                        addRecord();
+                      }}
+                    >
+                      Add Record
+                    </button>
                   </div>
-                  <div className="w-1/2"></div>
+                  <div className="w-1/2 flex flex-col gap-3">
+                    <div className="flex flex-col gap-2">
+                      <h1>Payee</h1>
+                      <input
+                        className="input border-base-300 bg-base-100 "
+                        placeholder="Write Here."
+                        onChange={(e) => {
+                          setToWho(e.target.value);
+                        }}
+                      ></input>
+                    </div>
+                    <div className="flex flex-col">
+                      <h1>Note.</h1>
+                      <textarea
+                        className="textarea resize-none h-3/4 border-base-300"
+                        placeholder="Write Here."
+                        onChange={(e) => {
+                          setDesc(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <form method="dialog" class="modal-backdrop">
