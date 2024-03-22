@@ -6,7 +6,7 @@ export default function register() {
   const [password, setPass] = useState("");
   const [cpassword, setCpass] = useState("");
   function redir() {
-    window.location.assign("http://localhost:3000/onboarding");
+    window.location.href = "http://localhost:3000/dashboard";
   }
   function registerVerify() {
     const sc = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~][0-9]/g;

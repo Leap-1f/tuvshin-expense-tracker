@@ -43,6 +43,32 @@ export default function Dashboard() {
       },
     ],
   };
+  async function getInfo() {
+    let fart = await fetch("http://localhost:8080/users/getInfo", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uuid: localStorage.getItem("id"),
+      }),
+    });
+  }
+  function logOut() {
+    localStorage.removeItem("id");
+    window.location.href = "http://localhost:3000/";
+  }
+  function checkId() {
+    if (localStorage.id != undefined) {
+      console.log("all good");
+    } else {
+      window.location.href = "http://localhost:3000/";
+    }
+  }
+  useEffect(() => {
+    checkId();
+  }, []);
   return (
     <div>
       {/* navbar below */}
@@ -81,12 +107,30 @@ export default function Dashboard() {
             </svg>
             <h1 className="font-light">Record</h1>
           </button>
-          <Image
-            src={"/favicon.ico"}
-            width={30}
-            height={24}
-            className="flex-shrink-0"
-          />
+          <div className="dropdown">
+            <button>
+              <Image
+                src={"/favicon.ico"}
+                width={30}
+                height={24}
+                className="flex-shrink-0"
+              />
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>
+                  <a
+                    onClick={() => {
+                      logOut();
+                    }}
+                  >
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            </button>
+          </div>
         </div>
       </div>
       <div className="w-screen h-screen bg-base-200">

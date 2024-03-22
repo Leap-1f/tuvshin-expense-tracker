@@ -1,6 +1,16 @@
 import { useIsVisible } from "@/components/isVisible";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 export default function onBoard() {
+  function checkId() {
+    if (localStorage.id != undefined) {
+      console.log("all good");
+    } else {
+      window.location.href = "http://localhost:3000/";
+    }
+  }
+  useEffect(() => {
+    checkId();
+  }, []);
   const currencyref = useRef();
   const currencyIsVisible = useIsVisible(currencyref);
   const balanceref = useRef();

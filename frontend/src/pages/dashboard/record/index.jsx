@@ -1,9 +1,18 @@
 import Image from "next/image";
 import { Input, Slider } from "@nextui-org/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function Dashboard() {
   const [value, setValue] = useState([0, 1000]);
   const [name, setName] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [trans_cat, setTransCat] = useState("Choose category");
+  function checkId() {
+    if (localStorage.id != undefined) {
+      console.log("all good");
+    } else {
+      window.location.href = "http://localhost:3000/";
+    }
+  }
   async function createCategory() {
     let fart = await fetch("http://localhost:8080/users/createCategory", {
       method: "POST",
@@ -16,6 +25,28 @@ export default function Dashboard() {
         uuid: localStorage.getItem("id"),
       }),
     });
+  }
+  async function getCategories() {
+    let fart = await fetch("http://localhost:8080/users/getCategories", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uuid: localStorage.getItem("id"),
+      }),
+    })
+      .then((response) => response.json())
+      .then((response) => setCategories(response));
+  }
+  useEffect(() => {
+    checkId();
+    getCategories();
+  }, []);
+  function logOut() {
+    localStorage.removeItem("id");
+    window.location.href = "http://localhost:3000/";
   }
   return (
     <div>
@@ -55,19 +86,40 @@ export default function Dashboard() {
             </svg>
             <h1 className="font-light">Record</h1>
           </button>
-          <Image
-            src={"/favicon.ico"}
-            width={30}
-            height={24}
-            className="flex-shrink-0"
-          />
+          <div className="dropdown">
+            <button>
+              <Image
+                src={"/favicon.ico"}
+                width={30}
+                height={24}
+                className="flex-shrink-0"
+              />
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>
+                  <a
+                    onClick={() => {
+                      logOut();
+                    }}
+                  >
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            </button>
+          </div>
         </div>
       </div>
       <div className="bg-[#F3F5F7] h-screen">
         <div className="w-1/6 h-5/6 bg-base-100 border-base-200 border-[1px] ml-20 rounded-lg">
           <div className="mr-4 ml-4 h-full">
             <h1 className="text-xl font-bold pt-4 mb-4">Records</h1>
-            <button className="btn btn-sm bg-primary gap-2 w-full flex flex-row rounded-3xl justify-center items-center text-white hover:bg-primary hover:text-black modal-open">
+            <button
+              className="btn btn-sm bg-primary gap-2 w-full flex flex-row rounded-3xl justify-center items-center text-white hover:bg-primary hover:text-black"
+              onClick={() => document.getElementById("record").showModal()}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -82,6 +134,70 @@ export default function Dashboard() {
               </svg>
               <h1 className="font-light">Add</h1>
             </button>
+            <dialog id="record" className="modal">
+              <div className="modal-box">
+                <div className="border-b-1 border-base-200 pb-4">
+                  <h1>Add Record</h1>
+                  <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-6 top-5 border-0 font-bold">
+                      ✕
+                    </button>
+                  </form>
+                </div>
+                <div className="mt-6">
+                  <div className="w-1/2 flex flex-col gap-5">
+                    <div class="join">
+                      <input
+                        aria-label="Expense"
+                        type="radio"
+                        name="inex"
+                        className="join-item btn hover:btn-error w-24 rounded-3xl"
+                        checked
+                      />
+                      <input
+                        aria-label="Income"
+                        type="radio"
+                        name="inex"
+                        className="join-item btn  hover:btn-success w-24 rounded-3xl"
+                        selected
+                      />
+                    </div>
+                    <input
+                      type="number"
+                      className="input bg-base-200 pt-6 input-lg pr-10"
+                      placeholder="₮ 000.00"
+                    />
+                    <h4 className="relative bottom-16 text-sm font-light left-6">
+                      Amount
+                    </h4>
+                    <h3>Category</h3>
+                    <select className="select">
+                      <option selected disabled>
+                        Choose a category
+                      </option>
+
+                      {categories.map((items) => (
+                        <option value={items.id}>{items.name}</option>
+                      ))}
+                    </select>
+                    <div className="flex flex-row">
+                      <div className="flex flex-col">
+                        <h1>Date</h1>
+                        <input type="date" className="input" />
+                      </div>
+                      <div className="flex flex-col">
+                        <h1>Time</h1>
+                        <input type="time" className="input" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/2"></div>
+                </div>
+              </div>
+              <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
             <input
               type="text"
               placeholder="Search"
@@ -132,6 +248,9 @@ export default function Dashboard() {
               </button>
             </div>
             <div className="flex flex-col gap-2">
+              {categories.map((item) => (
+                <div className="font-semibold text-md">{item.name}</div>
+              ))}
               <button
                 className="flex flex-row items-center gap-2 "
                 onClick={() =>
@@ -262,20 +381,26 @@ export default function Dashboard() {
                       type="text"
                       className="input ml-6 border-[1px] border-base-300"
                       placeholder="Name"
+                      id="cat_name"
                       onChange={(e) => {
                         setName(e.target.value);
                       }}
                     />
                   </div>
-                  <button
-                    className="btn rounded-lg w-full relative mt-12 bg-green-500 text-white hover:bg-green-600"
-                    onClick={() => {
-                      createCategory();
-                    }}
-                  >
-                    Submit
-                  </button>
+                  <form method="dialog">
+                    <button
+                      className="btn rounded-lg w-full relative mt-12 bg-green-500 text-white hover:bg-green-600"
+                      onClick={() => {
+                        createCategory();
+                      }}
+                    >
+                      Submit
+                    </button>
+                  </form>
                 </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
               </dialog>
             </div>
             <div className="mt-4">

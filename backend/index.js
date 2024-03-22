@@ -85,9 +85,25 @@ app.post("/users/createCategory", async (request, response) => {
   );
   const text = "INSERT INTO category(id, user_id, name)VALUES($1,$2,$3)";
   const values = [id, parsed.uuid, parsed.name];
+  console.log(parsed);
   const res = await client.query(text, values);
   response.status(200);
   response.send(id);
+});
+app.post("/users/getCategories", async (request, response) => {
+  const stringif = JSON.stringify(request.body);
+  const parsed = JSON.parse(stringif);
+  const text = "SELECT * FROM category WHERE user_id = $1";
+  const values = [parsed.uuid];
+  const res = await client.query(text, values);
+  console.log(res.rows);
+  response.status(200);
+  response.send(res.rows);
+});
+app.post("/users/getInfo", async (request, response) => {
+  const stringif = JSON.stringify(request.body);
+  const parsed = JSON.parse(stringif);
+  const text = "SELECT balance";
 });
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port);
