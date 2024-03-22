@@ -33,7 +33,7 @@ app.post("/users/createTable", async (request, response) => {
     response.send(id);
   } else {
     response.status(400);
-    response.send("Bad request.");
+    response.send("Bad Request.");
   }
 });
 app.post("/users/login", async (request, response) => {
@@ -42,20 +42,52 @@ app.post("/users/login", async (request, response) => {
   const test =
     "SELECT id, password FROM users WHERE email = '" + parsed.email + "'";
   const lolwut = await client.query(test);
-  const tester = await bcrypt.compare(parsed.pass, lolwut.rows[0].password);
-  if (tester === true) {
-    if (lolwut.rows[0] != undefined) {
-      response.status(200);
-      response.send(lolwut.rows[0].id);
+  console.log(lolwut.rows[0]);
+  if (lolwut.rows[0] != undefined) {
+    const tester = await bcrypt.compare(parsed.pass, lolwut.rows[0].password);
+    console.log(tester);
+    if (tester === true) {
+      if (lolwut.rows[0] != undefined) {
+        response.status(200);
+        response.send({ id: lolwut.rows[0].id });
+      } else {
+        console.log("THIRD failed");
+
+        response.sendStatus(400);
+      }
     } else {
+      console.log("SECOND failed");
+
       response.sendStatus(400);
     }
   } else {
-    response.sendStatus(400);
+    console.log("First failed");
+    response.status(400);
+    response.send("Bad request.");
   }
 });
 app.patch("/user/updateTable", async (request, response) => {
   const parsed = JSON.parse(request.body);
+});
+app.post("/users/createTransaction", async (request, response) => {});
+app.post("/users/createCategory", async (request, response) => {
+  const stringif = JSON.stringify(request.body);
+  const parsed = JSON.parse(stringif);
+  let id = uuidv4();
+  console.log(
+    "INSERT INTO category(id, user_id, name)VALUES('" +
+      id +
+      "','" +
+      parsed.uuid +
+      "','" +
+      parsed.name +
+      "')"
+  );
+  const text = "INSERT INTO category(id, user_id, name)VALUES($1,$2,$3)";
+  const values = [id, parsed.uuid, parsed.name];
+  const res = await client.query(text, values);
+  response.status(200);
+  response.send(id);
 });
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port);
